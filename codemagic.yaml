@@ -36,20 +36,19 @@ workflows:
           p = Path("app/src/main/java/com/trendmusic/app/MainActivity.kt")
           s = p.read_text()
 
-          if "import androidx.compose.foundation.verticalScroll" not in s:
-              s = s.replace(
-                  "import androidx.compose.foundation.horizontalScroll",
-                  "import androidx.compose.foundation.horizontalScroll\nimport androidx.compose.foundation.verticalScroll"
-              )
-
           s = s.replace(
-              "    NavigationBarItem(",
-              "    androidx.compose.material3.NavigationBarItem("
+              "NavigationBarItemDefaults.colors(",
+              "androidx.compose.material3.NavigationBarItemDefaults.colors("
           )
 
           s = s.replace(
-              "        colors = NavigationBarItemDefaults.colors(",
-              "        colors = androidx.compose.material3.NavigationBarItemDefaults.colors("
+              "NavigationBarItem(",
+              "androidx.compose.material3.NavigationBarItem("
+          )
+
+          s = s.replace(
+              "verticalScroll(",
+              "androidx.compose.foundation.verticalScroll("
           )
 
           p.write_text(s)
