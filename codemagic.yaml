@@ -25,6 +25,15 @@ workflows:
           unzip -q gradle.zip
           rm gradle.zip
 
+      - name: Fix Java and Kotlin JVM targets
+        script: |
+          set -e
+          cd build_project/trendmusic
+          sed -i 's/JavaVersion.VERSION_1_8/JavaVersion.VERSION_17/g' app/build.gradle.kts
+          sed -i 's/JavaVersion.VERSION_8/JavaVersion.VERSION_17/g' app/build.gradle.kts
+          sed -i 's/jvmTarget = "1.8"/jvmTarget = "17"/g' app/build.gradle.kts
+          sed -i 's/jvmTarget = "8"/jvmTarget = "17"/g' app/build.gradle.kts
+
       - name: Build Android debug APK
         script: |
           set -e
