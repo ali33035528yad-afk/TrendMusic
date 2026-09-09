@@ -23,16 +23,31 @@ workflows:
           cd "$CM_BUILD_DIR"
           curl -L -o gradle.zip https://services.gradle.org/distributions/gradle-8.9-bin.zip
           unzip -q gradle.zip
-          rm gradle.zip
+          rm -f gradle.zip
 
-      - name: Fix Java and Kotlin JVM targets
+      - name: Force Java and Kotlin to JVM 17
         script: |
           set -e
           cd build_project/trendmusic
+
           sed -i 's/JavaVersion.VERSION_1_8/JavaVersion.VERSION_17/g' app/build.gradle.kts
           sed -i 's/JavaVersion.VERSION_8/JavaVersion.VERSION_17/g' app/build.gradle.kts
           sed -i 's/jvmTarget = "1.8"/jvmTarget = "17"/g' app/build.gradle.kts
           sed -i 's/jvmTarget = "8"/jvmTarget = "17"/g' app/build.gradle.kts
+
+          cat >> app/build.gradle.kts <<'EOF'
+
+          android {
+              compileOptions {
+                  sourceCompatibility = JavaVersion.VERSION_17
+                  targetCompatibility = JavaVersion.VERSION_17
+              }
+          }
+
+          kotlin {
+              jvmToolchain(17)
+          }
+          EOF
 
       - name: Build Android debug APK
         script: |
