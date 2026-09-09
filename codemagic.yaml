@@ -25,10 +25,35 @@ workflows:
           unzip -q gradle.zip
           rm -f gradle.zip
 
-      - name: Force Java 17
+      - name: Fix TrendMusic source
         script: |
           set -e
           cd build_project/trendmusic
+
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p = Path("app/src/main/java/com/trendmusic/app/MainActivity.kt")
+          s = p.read_text()
+
+          if "import androidx.compose.foundation.verticalScroll" not in s:
+              s = s.replace(
+                  "import androidx.compose.foundation.horizontalScroll",
+                  "import androidx.compose.foundation.horizontalScroll\nimport androidx.compose.foundation.verticalScroll"
+              )
+
+          s = s.replace(
+              "    NavigationBarItem(",
+              "    androidx.compose.material3.NavigationBarItem("
+          )
+
+          s = s.replace(
+              "        colors = NavigationBarItemDefaults.colors(",
+              "        colors = androidx.compose.material3.NavigationBarItemDefaults.colors("
+          )
+
+          p.write_text(s)
+          PY
 
           cat >> app/build.gradle.kts <<'EOF'
 
