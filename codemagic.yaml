@@ -1,0 +1,35 @@
+workflows:
+  trendmusic-android:
+    name: TrendMusic Android APK
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+
+    scripts:
+      - name: Extract TrendMusic project
+        script: |
+          set -e
+          rm -rf build_project
+          unzip -q TrendMusic-Fixed.zip -d build_project
+
+      - name: Set Android SDK location
+        script: |
+          set -e
+          cd build_project/trendmusic
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+
+      - name: Install Gradle 8.9
+        script: |
+          set -e
+          cd "$CM_BUILD_DIR"
+          curl -L -o gradle.zip https://services.gradle.org/distributions/gradle-8.9-bin.zip
+          unzip -q gradle.zip
+          rm gradle.zip
+
+      - name: Build Android debug APK
+        script: |
+          set -e
+          cd build_project/trendmusic
+          "$CM_BUILD_DIR/gradle-8.9/bin/gradle" assembleDebug
+
+    artifacts:
+      - build_project/trendmusic/app/build/outputs/**/*.apk
